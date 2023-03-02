@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 
 function App() {
 
-
+  let [unitéd, setUnitéd] = useState(0)
 
   let [sp, setSp] = useState('block')
   let [produit, setProduit] = useState([
@@ -35,11 +35,50 @@ function App() {
 
   }
 
+  useEffect(() => {
+    fini()
+  }, [argent])
 
+  const supp = (produit) => {
+    // e.target.parentNode.parentNode.style.display='none'
+    const nouveauPanier = panier.filter((item) => item.id !== produit.id);
+    console.log(panier.filter((item) => item.key !== produit.key));
+    setQuantity(nouveauPanier.length + 1)
+    console.log(panier.length);
+    produit.unité = produit.unité - 1
+    setArgent(argent => argent + produit.prix)
+    setQuantity(quantity => quantity - 1)
+    setUnitéd(unitéd => unitéd - 1)
+    setProduit(produit => produit.unité + 1)
+
+    const nouveauProduits = produit.filter((p) => {
+      if ( unitéd <= 0) {
+        return false; // ne pas inclure ce produit dans le nouveau tableau
+      }
+      return true; // inclure tous les autres produits dans le nouveau tableau
+    });
+    setProduit(nouveauProduits);
+    if (produit.unité < 0) {
+      console.log(produit, 2);
+    }
+    setPanier(nouveauPanier);
+    if (argent > produit.prix) {
+      produit.button = 'block'
+      produit.bg = 'bg-transparent'
+    }
+    if (argent > 0) {
+      setHidd('hidden')
+    }
+
+
+
+  }
   const achat = (produit) => {
     setQuantity(quantity => quantity + 1)
     setArgent(argent => argent - produit.prix)
+
     produit.unité = produit.unité - 1
+    setUnitéd(unitéd => unitéd + 1)
     fini()
     if (argent < produit.prix) {
       produit.bg = 'bg-yellow-500'
@@ -53,34 +92,27 @@ function App() {
 
     }
 
-    const supp = (e,onDelete) => {
-      // e.target.parentNode.parentNode.style.display='none'
-      const nomProduit = e.target;
-      const nouveauPanier = panier.filter((produit) => produit.key !== nomProduit);
-      console.log(nouveauPanier);
-      onDelete();
-      setPanier(nouveauPanier);
-
-      console.log(panier.length);
-      setArgent(argent => argent + produit.prix)
-      setQuantity(quantity => quantity - 1)
-      produit.unité = produit.unité + 1
-      if (argent > produit.prix) {
-        produit.button = 'block'
-        produit.bg = 'bg-transparent'
-      }
-      if (argent > 0) {
-        setHidd('hidden')
-      }
-
-
-
+    const index = panier.findIndex((p) => p.id === produit.id);
+    if (index !== -1) {
+      // Le produit existe déjà, on met à jour l'unité
+      const nouveauProduit = panier.map((p) =>
+        p.id === panier.id ? { ...p, unite: p.unite + 1 } : p
+      );
+      setProduit(nouveauProduit);
+    } else {
+      // Le produit n'existe pas encore, on l'ajoute au tableau
+      setPanier([...panier, produit]);
     }
-    setPanier([...panier,
-    <div className={`pr-10 border-2 border-orange-400 pl-2 ${sp}`}>
-      <div className='flex items-center justify-between ' key={produit.id}  ><div>Produit: {produit.nom}, {produit.unité}</div><div><img src={produit.img} className="w-[50px] h-[50px]" alt="" /></div></div>
-      <div><button onClick={supp} className='text-red-500' >Delete</button></div>
-    </div>])
+
+
+    // setPanier([...panier, produit
+    // // <div>
+    // //   <div className={`flex items-center justify-between pr-10 border-2 border-orange-400 pl-2 ${sp} `} key={produit.id}  >
+    // //     <div>Produit: {produit.nom}, {produit.unité}</div><div><img src={produit.img} className="w-[50px] h-[50px]" alt="" />
+    // //     </div>
+    // //   </div>
+    // //   <button onClick={supp} className='text-red-500' >Delete</button></div>
+    // ])
 
 
 
@@ -90,15 +122,15 @@ function App() {
 
   return (
     <div className="App bg-[url('./components/img/bg.jpeg')] h-screen">
-
-      <Nav argent={argent} quantity={quantity} />
+ 
+      <Nav argent={argent} quantity={quantity} unitéd={unitéd} panier={panier} />
 
       <Routes>
         <Route path='/' element={<Home />} />
 
         <Route path='/shop' element={<Shop hidd={hidd} produit={produit} panier={panier} achat={achat} />} />
 
-        <Route path='/panier' element={<Panier panier={panier} />} />
+        <Route path='/panier' element={<Panier panier={panier} unitéd={unitéd} supp={supp} />} />
 
 
       </Routes>

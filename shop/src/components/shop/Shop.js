@@ -10,25 +10,25 @@ export const Shop = (props) => {
         { id: 1, nom: "Coca", unité: 5, prix: 2, bg: "", button: "", img: coca },
         { id: 2, nom: "Fanta", unité: 2, prix: 2.5, bg: "", button: "", img: fanta },
         { id: 3, nom: "Sprite", unité: 3, prix: 1.5, bg: "", button: "", img: sprite }
-      ])
+    ])
 
     const [txt, setTxt] = useState('');
     const [filtrer, setFiltrer] = useState([]);
-  
+
 
     useEffect(() => {
         const filtrer = produit.filter((produit) => produit.nom.toLowerCase().includes(txt.toLowerCase()));
         setFiltrer(filtrer);
-      }, [txt, produit])
+    }, [txt, produit])
 
 
-      const recherche = (e) => {
+    const recherche = (e) => {
         setTxt(e.target.value)
-      }
+    }
 
     return (
         <div>
-            
+
 
 
             <div className='flex justify-center'>
@@ -39,9 +39,9 @@ export const Shop = (props) => {
                             <input type="text" value={txt} onChange={recherche} />
                         </div>
                     </div>
-                    <div className='flex gap-12 relative bg-orange-400 rounded-b-xl p-[50px]'>
+                    <div className='flex gap-12 relative bg-orange-400/70 rounded-b-xl p-[50px]'>
                         <div className={`absolute w-full h-full bg-red-300 top-0 left-0 flex justify-center items-center ${props.hidd}`}>Pas d'argent</div>
-                        {filtrer.map((produit) => (
+                        {produit.map((produit) => (
                             <div key={produit.id} className='bg-white w-[300px] h-[400px] rounded-xl p-2'>
                                 <div className={`${produit.bg} pl-3`} >
                                     <div><img className='w-full h-[250px]' src={produit.img} alt="" /></div>
@@ -55,7 +55,7 @@ export const Shop = (props) => {
                     </div>
                 </div>
             </div>
-           
+
         </div>
 
 
